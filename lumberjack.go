@@ -109,7 +109,7 @@ type Logger struct {
 
 	size int64
 	file *os.File
-	mu   sync.Mutex
+	//mu   sync.Mutex
 
 	millCh    chan bool
 	startMill sync.Once
@@ -133,8 +133,8 @@ var (
 // current time, and a new log file is created using the original log file name.
 // If the length of the write is greater than MaxSize, an error is returned.
 func (l *Logger) Write(p []byte) (n int, err error) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	//l.mu.Lock()
+	//defer l.mu.Unlock()
 
 	writeLen := int64(len(p))
 	if writeLen > l.max() {
@@ -163,8 +163,8 @@ func (l *Logger) Write(p []byte) (n int, err error) {
 
 // Close implements io.Closer, and closes the current logfile.
 func (l *Logger) Close() error {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	//l.mu.Lock()
+	//defer l.mu.Unlock()
 	return l.close()
 }
 
@@ -184,8 +184,8 @@ func (l *Logger) close() error {
 // SIGHUP.  After rotating, this initiates compression and removal of old log
 // files according to the configuration.
 func (l *Logger) Rotate() error {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	//l.mu.Lock()
+	//defer l.mu.Unlock()
 	return l.rotate()
 }
 
