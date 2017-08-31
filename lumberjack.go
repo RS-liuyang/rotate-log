@@ -157,7 +157,7 @@ func (l *Logger) Write(p []byte) (n int, err error) {
 		}
 	}
 
-	n, err = l.file.Write(p)
+	//n, err = l.file.Write(p)
 	n, err = l.bw.Write(p)
 	l.size += int64(n)
 
