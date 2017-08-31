@@ -22,6 +22,7 @@
 package lumberjack
 
 import (
+	"bufio"
 	"compress/gzip"
 	"errors"
 	"fmt"
@@ -109,6 +110,7 @@ type Logger struct {
 
 	size int64
 	file *os.File
+	bw		*bufio.Writer
 	//mu   sync.Mutex
 
 	millCh    chan bool
@@ -156,6 +158,7 @@ func (l *Logger) Write(p []byte) (n int, err error) {
 	}
 
 	n, err = l.file.Write(p)
+	n, err = l.bw.Write(p)
 	l.size += int64(n)
 
 	return n, err
@@ -173,8 +176,10 @@ func (l *Logger) close() error {
 	if l.file == nil {
 		return nil
 	}
+	l.bw.Flush()
 	err := l.file.Close()
 	l.file = nil
+	l.bw = nil
 	return err
 }
 
@@ -236,6 +241,7 @@ func (l *Logger) openNew() error {
 	if err != nil {
 		return fmt.Errorf("can't open new logfile: %s", err)
 	}
+	l.bw = bufio.NewWriter(f)
 	l.file = f
 	l.size = 0
 	return nil
@@ -284,6 +290,7 @@ func (l *Logger) openExistingOrNew(writeLen int) error {
 		return l.openNew()
 	}
 	l.file = file
+	l.bw = bufio.NewWriter(file)
 	l.size = info.Size()
 	return nil
 }
